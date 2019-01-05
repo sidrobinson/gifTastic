@@ -7,45 +7,78 @@
 </head>
 
 <body>
-    <button id="gifButton">gif button</button>
-    <button id="footballButton">football gifs</button>
-    <button id="danceButton">dance gifs</button>
-    <button id="laughingButton">laughing gifs</button>
-    <button id="mmaButton">mma gifs</button>
+    <!-- this is our array of gif buttons that each search a different tag -->
+    <div id="gifButtons">
+        <button class="gifSearchButton">gif button</button>
+        <button class="gifSearchButton" tag="football">football gifs</button>
+        <button class="gifSearchButton" tag="dance">dance gifs</button>
+        <button class="gifSearchButton" tag="laughing">laughing gifs</button>
+        <button class="gifSearchButton" tag="mma">mma gifs</button>
+    </div>
+
+    <!-- this is what adds buttons to the div above ^^^ -->
+    <div class="topnav">
+        <input id="gif-search" type="text" placeholder="Search...">
+        <button id="addGifButton">Submit</button>
+    </div>
 
     <div id="images">
     </div>
 
-    <div class="topnav">
-        <input type="text" placeholder="Search...">
-    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script type="text/javascript">
         // Giving the gifButton a function
-        $("#gifButton").on("click", function () {
 
+        $("#addGifButton").click( function(){
+            let tag = $("#gif-search").val();         
+            
+            //1. use the tag variable to create a button with jquery
+            let newButton = $("<button>"); 
+            
+            newButton.html(tag + " gifs");        
+            
+            //2. we also need to make sure our new button has a "tag" attribute, and assign it the value of the above variable          
+            newButton.attr("tag", tag)    
 
-            let queryURL = "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=";
+            //3 give it the gifSearchButton class
+            newButton.addClass("gifSearchButton");
 
-            // Perfoming an AJAX GET request to our queryURL
-            $.ajax({
-                url: queryURL,
-                method: "GET"
-            })
+            //4 make sure our new button gets the click event for the API search
+            newButton.click(gifSearchClick);
 
-                // After the data from the AJAX request comes back
-                .then(function (response) {
-                    let gifImage = $("<img>");
-
-                    let imageUrl = response.data.image_original_url;
-
-                    $("#images").append(gifImage);
-
-                    gifImage.attr("src", imageUrl);
-                    gifImage.attr("alt", "gif image");
-                });
+            //5 append it to the gifButtons div
+            $("#gifButtons").append(newButton);
         });
+        
+        $(".gifSearchButton").click(gifSearchClick);
+
+        function gifSearchClick () {
+
+        let tag = $(this).attr("tag");
+        if (typeof tag != "string" ) {
+            tag == "";
+        }
+        let queryURL = "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=" + tag;
+
+        // Perfoming an AJAX GET request to our queryURL
+        $.ajax({
+            url: queryURL,
+            method: "GET"
+        })
+
+            // After the data from the AJAX request comes back
+            .then(function (response) {
+                let gifImage = $("<img>");
+
+                let imageUrl = response.data.image_original_url;
+
+                $("#images").append(gifImage);
+
+                gifImage.attr("src", imageUrl);
+                gifImage.attr("alt", "gif image");
+            });
+        }
     </script>
 </body>
 
